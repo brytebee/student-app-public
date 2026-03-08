@@ -1,0 +1,12 @@
+{
+  "model_type": "vits",
+  "sampling_rate": 16000,
+  "vocab_size": 34,
+  "hidden_size": 192,
+  "num_speakers": 1,
+  "speaker_embedding_size": 0,
+  "noise_scale": 0.667,
+  "noise_scale_duration": 0.8,
+  "speaking_rate": 1.0,
+  "use_stochastic_duration_prediction": true
+}

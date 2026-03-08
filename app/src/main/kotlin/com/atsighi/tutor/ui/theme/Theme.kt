@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 val HausaIndigo = Color(0xFF3F51B5)
+val HausaDeepIndigo = Color(0xFF283593)
+val HausaSoftBlue = Color(0xFFE3F2FD)
 val EcoLeafGreen = Color(0xFF4CAF50)
 val TeacherWarmWhite = Color(0xFFF5F5F5)
 val AcademicGold = Color(0xFFFFD700)
@@ -39,7 +41,7 @@ fun HausaTutorTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography, // Assume standard Typography is defined
+        typography = androidx.compose.material3.Typography(), // Assume standard Typography is defined
         content = content
     )
 }

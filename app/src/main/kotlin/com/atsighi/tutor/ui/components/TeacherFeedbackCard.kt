@@ -9,11 +9,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.atsighi.engine.core.EvaluationResult
-import com.atsighi.tutor.ui.theme.HausaIndigo
+import androidx.compose.foundation.shape.RoundedCornerShape
+import com.atsighi.tutor.ui.theme.HausaDeepIndigo
 import com.atsighi.tutor.ui.theme.EcoLeafGreen
 
 /**
  * Animated feedback card that slides up when the AI finishes evaluation.
+ * Designed with a premium, academic feel.
  */
 @Composable
 fun TeacherFeedbackCard(result: EvaluationResult?, modifier: Modifier = Modifier) {
@@ -24,48 +26,51 @@ fun TeacherFeedbackCard(result: EvaluationResult?, modifier: Modifier = Modifier
     ) {
         result?.let {
             Card(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+                modifier = modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(modifier = Modifier.padding(24.dp)) {
                     // Friendly Status Header
                     Text(
-                        text = if (it.isCorrect) "Ị gbalịala! (Well done!)" else "Dẹ̀mọ́ (Almost there!)",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = if (it.isCorrect) EcoLeafGreen else HausaIndigo
+                        text = if (it.isCorrect) "Madallah! (Excellent!)" else "Sannu! (Keep trying!)",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = if (it.isCorrect) EcoLeafGreen else HausaDeepIndigo
                     )
                     
                     Spacer(modifier = Modifier.height(12.dp))
                     
-                    // Teacher's Explanation (Naija flavored)
+                    // Teacher's Explanation
                     Text(
                         text = it.teacherFeedback,
                         style = MaterialTheme.typography.bodyLarge,
+                        color = Color.DarkGray,
                         lineHeight = MaterialTheme.typography.bodyLarge.lineHeight * 1.2
                     )
                     
                     if (!it.isCorrect) {
-                        HorizontalDivider(
+                        Divider(
                             modifier = Modifier.padding(vertical = 16.dp),
                             thickness = 1.dp,
-                            color = Color.LightGray.copy(alpha = 0.5f)
+                            color = Color.LightGray.copy(alpha = 0.3f)
                         )
                         
                         Text(
-                            text = "Correct Way:",
-                            style = MaterialTheme.typography.labelMedium,
+                            text = "A DAI-DAI TAKE (CORRECTLY):",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
                             color = Color.Gray
                         )
+                        
+                        Spacer(modifier = Modifier.height(4.dp))
                         
                         Text(
                             text = it.correctedText,
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = HausaIndigo
+                            fontWeight = FontWeight.Black,
+                            color = HausaDeepIndigo
                         )
                     }
                 }
