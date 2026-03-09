@@ -44,6 +44,8 @@ data class ChatMessage(
 fun LiveConversationScreen(engine: ILanguageEngine, audioService: AudioService) {
     val chatMessages = remember { mutableStateListOf<ChatMessage>() }
     val isRecording by audioService.isListening
+    val rmsLevel by audioService.rmsLevel
+    val micError by audioService.micError
     var evaluation by remember { mutableStateOf<EvaluationResult?>(null) }
     var currentContext by remember { mutableStateOf(ConversationContext(timeOfDay = "morning")) }
     var optimizationLevel by remember { mutableStateOf(OptimizationLevel.NORMAL) }
@@ -73,6 +75,14 @@ fun LiveConversationScreen(engine: ILanguageEngine, audioService: AudioService) 
     LaunchedEffect(chatMessages.size) {
         if (chatMessages.isNotEmpty()) {
             listState.animateScrollToItem(chatMessages.size - 1)
+        }
+    }
+
+    // Show mic error toasts
+    val context = androidx.compose.ui.platform.LocalContext.current
+    LaunchedEffect(micError) {
+        micError?.let {
+            android.widget.Toast.makeText(context, it, android.widget.Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -176,7 +186,7 @@ fun LiveConversationScreen(engine: ILanguageEngine, audioService: AudioService) 
                         )
                     }
                     
-                    PulseRecordButton(isRecording = isRecording) {
+                    PulseRecordButton(isRecording = isRecording, rmsLevel = rmsLevel) {
                         if (!isRecording) {
                             audioService.startListening()
                         } else {

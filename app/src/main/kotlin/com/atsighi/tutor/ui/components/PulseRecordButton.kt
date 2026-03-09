@@ -25,21 +25,27 @@ import com.atsighi.tutor.ui.theme.HausaIndigo
  * The "pulse" animation triggers when the user holds the button.
  */
 @Composable
-fun PulseRecordButton(isRecording: Boolean, onClick: () -> Unit) {
+fun PulseRecordButton(isRecording: Boolean, rmsLevel: Float = 0f, onClick: () -> Unit) {
     val infiniteTransition = rememberInfiniteTransition()
-    val scale by infiniteTransition.animateFloat(
+    
+    // Base scale from infinite transition
+    val baseScale by infiniteTransition.animateFloat(
         initialValue = 1f,
-        targetValue = if (isRecording) 1.25f else 1.0f,
+        targetValue = if (isRecording) 1.15f else 1.0f,
         animationSpec = infiniteRepeatable(
             animation = tween(1200, easing = LinearOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         )
     )
 
+    // Dynamic boost from RMS level (real-time voice power)
+    // We additive the RMS to create a "reactive" feel
+    val dynamicScale = baseScale + (rmsLevel * 0.4f)
+
     Box(contentAlignment = Alignment.Center, modifier = Modifier.size(140.dp)) {
         // The breathing pulse ring
         if (isRecording) {
-            Canvas(modifier = Modifier.fillMaxSize().graphicsLayer(scaleX = scale, scaleY = scale)) {
+            Canvas(modifier = Modifier.fillMaxSize().graphicsLayer(scaleX = dynamicScale, scaleY = dynamicScale)) {
                 drawCircle(color = HausaIndigo.copy(alpha = 0.25f))
             }
         }

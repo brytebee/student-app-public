@@ -42,6 +42,14 @@ class AudioService(private val context: Context) : TextToSpeech.OnInitListener {
     var isReady = mutableStateOf(false)
         private set
 
+    // Real-time audio power for pulse animations
+    var rmsLevel = mutableStateOf(0f)
+        private set
+
+    // Specific error messages for UI feedback
+    var micError = mutableStateOf<String?>(null)
+        private set
+
     init {
         tts = TextToSpeech(context, this)
         setupSpeechRecognizer()
@@ -55,28 +63,43 @@ class AudioService(private val context: Context) : TextToSpeech.OnInitListener {
         if (SpeechRecognizer.isRecognitionAvailable(context)) {
             speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
             speechRecognizer?.setRecognitionListener(object : RecognitionListener {
-                override fun onReadyForSpeech(params: Bundle?) { Log.d("AudioService", "Ready for speech") }
-                override fun onBeginningOfSpeech() { Log.d("AudioService", "Beginning of speech") }
-                override fun onRmsChanged(rmsdB: Float) {}
+                override fun onReadyForSpeech(params: Bundle?) { 
+                    Log.d("AudioService", "Ready for speech")
+                    micError.value = null
+                }
+                override fun onBeginningOfSpeech() { 
+                    Log.d("AudioService", "Beginning of speech")
+                    micError.value = null
+                }
+                override fun onRmsChanged(rmsdB: Float) {
+                    // Normalize RMS to 0.0 - 1.0 range (roughly)
+                    // SpeechRecognition RMS typically ranges from -2 to 10
+                    val normalized = ((rmsdB + 2f) / 12f).coerceIn(0f, 1f)
+                    rmsLevel.value = normalized
+                }
                 override fun onBufferReceived(buffer: ByteArray?) {}
-                override fun onEndOfSpeech() { Log.d("AudioService", "End of speech") }
+                override fun onEndOfSpeech() { 
+                    Log.d("AudioService", "End of speech")
+                    rmsLevel.value = 0f
+                }
                 override fun onError(error: Int) {
                     val message = when (error) {
-                        SpeechRecognizer.ERROR_AUDIO -> "Audio recording error"
-                        SpeechRecognizer.ERROR_CLIENT -> "Client side error"
-                        SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Insufficient permissions"
-                        SpeechRecognizer.ERROR_NETWORK -> "Network error"
-                        SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "Network timeout"
-                        SpeechRecognizer.ERROR_NO_MATCH -> "No match"
-                        SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "RecognitionService busy"
-                        SpeechRecognizer.ERROR_SERVER -> "Error from server"
-                        SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "No speech input"
-                        else -> "Unknown error"
+                        SpeechRecognizer.ERROR_AUDIO -> "Audio recording error. Check your connection."
+                        SpeechRecognizer.ERROR_CLIENT -> "Internal error. Please restart."
+                        SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Please enable microphone permission."
+                        SpeechRecognizer.ERROR_NETWORK -> "Network error. Check your internet."
+                        SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "Network timeout."
+                        SpeechRecognizer.ERROR_NO_MATCH -> "No speech detected. Try again?"
+                        SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "Mic is busy. Wait a moment."
+                        SpeechRecognizer.ERROR_SERVER -> "Server error. Try again later."
+                        SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "I didn't hear anything. Try again?"
+                        else -> "Mic error. Please try again."
                     }
                     Log.e("AudioService", "Speech error: $message")
-                    
+                    micError.value = message
                     shouldBeListening = false
                     isListening.value = false
+                    rmsLevel.value = 0f
                 }
 
                 override fun onResults(results: Bundle?) {
