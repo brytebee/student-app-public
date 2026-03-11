@@ -59,10 +59,24 @@ We are seeking partners who share our passion for cultural preservation and AI f
 ---
 
 ## 🏗️ Getting Started
-*(Instructions for developers to clone the repo and link to the documentation)*
 
-1. Clone the repo: `git clone https://github.com/brytebee/student-app-public.git`
-2. Explore the [Project Wiki]() for the roadmap.
+To get started with development for the Native Tutor AI Student App, follow these steps:
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/brytebee/student-app-public.git
+   ```
+2. **Setup Private Engine**: This app depends on the `language-engine-private` module. Ensure you have access and it is linked correctly in your `settings.gradle.kts`.
+3. **API Keys**: Add your `GEMINI_API_KEY` and `ELEVEN_LABS_API_KEY` to `local.properties`.
+4. **Build & Run**: Open the project in Android Studio and sync Gradle.
+
+## 📖 Developer Documentation
+
+For a deeper dive into the technical details, please refer to the following guides:
+
+- **[Architecture Deep Dive](docs/ARCHITECTURE.md)**: Understanding the MVVM structure, service integration, and the private engine bridge.
+- **[Development Guide](docs/DEVELOPMENT_GUIDE.md)**: Environment setup, testing workflows, and "Eco Mode" implementation details.
+- **[Community Consensus](https://github.com/brytebee/community-consensus)**: Learn how linguistic data is verified and synced.
 
 ---
 Developed with ❤️ in Nigeria, for the World.
